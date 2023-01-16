@@ -74,7 +74,7 @@ describe("App", () => {
           expect(body).toHaveProperty("review");
           expect(review).toHaveProperty("owner", expect.any(String));
           expect(review).toHaveProperty("title", expect.any(String));
-          expect(review).toHaveProperty("review_id", expect.any(Number));
+          expect(review).toHaveProperty("review_id", 1);
           expect(review).toHaveProperty("category", expect.any(String));
           expect(review).toHaveProperty("review_img_url", expect.any(String));
           expect(review).toHaveProperty("review_body", expect.any(String));
