@@ -64,4 +64,40 @@ describe("App", () => {
         });
     });
   });
+
+  describe("GET /api/reviews/:review_id", () => {
+    test("200: Responds with a review object, which should have the properties: review_id, title, review_body, designer, review_img_url, votes, category, owner and created_at", () => {
+      return request(app)
+        .get("/api/reviews/1")
+        .expect(200)
+        .then(({ body, body: { review } }) => {
+          expect(body).toHaveProperty("review");
+          expect(review).toHaveProperty("owner", expect.any(String));
+          expect(review).toHaveProperty("title", expect.any(String));
+          expect(review).toHaveProperty("review_id", 1);
+          expect(review).toHaveProperty("category", expect.any(String));
+          expect(review).toHaveProperty("review_img_url", expect.any(String));
+          expect(review).toHaveProperty("review_body", expect.any(String));
+          expect(review).toHaveProperty("created_at", expect.any(String));
+          expect(review).toHaveProperty("votes", expect.any(Number));
+          expect(review).toHaveProperty("designer", expect.any(String));
+        });
+    });
+    test("404: correct data type, but review is not found in the data", () => {
+      return request(app)
+        .get("/api/reviews/100")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Not Found");
+        });
+    });
+    test("400: incorrect data type as param", () => {
+      return request(app)
+        .get("/api/reviews/abc")
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Bad Request");
+        });
+    });
+  });
 });
