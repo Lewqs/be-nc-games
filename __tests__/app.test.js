@@ -53,5 +53,15 @@ describe("App", () => {
           });
         });
     });
+    test("should return the array of review objects sorted by created_at in descending order", () => {
+      return request(app)
+        .get("/api/reviews")
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+          expect(reviews).toBeSortedBy("created_at", {
+            descending: true,
+          });
+        });
+    });
   });
 });
