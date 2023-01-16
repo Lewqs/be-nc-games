@@ -24,6 +24,7 @@ describe("App", () => {
             body: { categories },
           } = result;
           expect(body).toHaveProperty("categories");
+          expect(categories.length).toBeGreaterThanOrEqual(1);
           categories.forEach((category) => {
             expect(category).toHaveProperty("slug");
             expect(category).toHaveProperty("description");
