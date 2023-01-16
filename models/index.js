@@ -1,3 +1,4 @@
+const format = require("pg-format");
 const db = require("../db/connection");
 
 exports.fetchCategories = () => {
@@ -17,5 +18,13 @@ exports.fetchReviews = () => {
   ORDER BY created_at desc;`;
   return db.query(queryStr).then(({ rows: reviews }) => {
     return reviews;
+  });
+};
+
+exports.fetchReviewById = (id) => {
+  const queryStr = format(`SELECT * FROM reviews WHERE review_id = %L;`, id);
+  return db.query(queryStr).then(({ rows: reviews }) => {
+    if (!reviews[0]) return Promise.reject({ status: 404, msg: "Not Found" });
+    return reviews[0];
   });
 };
