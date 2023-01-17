@@ -1,17 +1,20 @@
-const e = require("express");
 const express = require("express");
 const {
   getCategories,
   getReviews,
   getReviewById,
   getCommentsByReviewId,
+  postCommentByReviewId,
 } = require("./controllers");
 const app = express();
+
+app.use(express.json());
 
 app.get("/api/categories", getCategories);
 app.get("/api/reviews", getReviews);
 app.get("/api/reviews/:review_id", getReviewById);
 app.get("/api/reviews/:review_id/comments", getCommentsByReviewId);
+app.post("/api/reviews/:review_id/comments", postCommentByReviewId);
 
 // Path Not Found Handler
 app.use((req, res, next) => {
@@ -19,22 +22,22 @@ app.use((req, res, next) => {
 });
 
 // Custom Error Handler
-app.use((err, request, response, next) => {
-  if (err.status) response.status(err.status).send({ message: err.msg });
+app.use((err, req, res, next) => {
+  if (err.status) res.status(err.status).send({ message: err.msg });
   else next(err);
 });
 
 // PostgreSQL Error Code Handler
-app.use((err, request, response, next) => {
+app.use((err, req, res, next) => {
   if (err.code === "22P02") {
-    response.status(400).send({ message: "Bad Request" });
+    res.status(400).send({ message: "Bad Request" });
   } else next(err);
 });
 
 // Unhandled PostgreSQL Error Codes/Server Has Kaboomed
-app.use((err, request, response, next) => {
+app.use((err, req, res, next) => {
   console.log(err);
-  response.status(500).send("Internal Server Error");
+  res.status(500).send("Internal Server Error");
 });
 
 module.exports = app;

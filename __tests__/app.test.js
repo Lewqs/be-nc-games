@@ -163,4 +163,76 @@ describe("App", () => {
         });
     });
   });
+
+  describe("POST /api/reviews/:review_id/comments", () => {
+    test("201: returns the new comment object", () => {
+      return request(app)
+        .post("/api/reviews/1/comments")
+        .send({ username: "mallionaire", body: "This is a test!" })
+        .expect(201)
+        .then(({ body, body: { comment } }) => {
+          expect(body).toHaveProperty("comment");
+          expect(comment).toHaveProperty("author", "mallionaire");
+          expect(comment).toHaveProperty("body", "This is a test!");
+          expect(comment).toHaveProperty("comment_id", 7);
+          expect(comment).toHaveProperty("created_at", expect.any(String));
+          expect(comment).toHaveProperty("review_id", 1);
+          expect(comment).toHaveProperty("votes", 0);
+        });
+    });
+    test("404: correct data type for the review_id param, but review is not found", () => {
+      return request(app)
+        .post("/api/reviews/100/comments")
+        .expect(404)
+        .send({ username: "mallionaire", body: "This is a test!" })
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Review ID: 100 Not Found");
+        });
+    });
+    test("400: incorrect data type for the review_id param", () => {
+      return request(app)
+        .post("/api/reviews/abc/comments")
+        .expect(400)
+        .send({ username: "mallionaire", body: "This is a test!" })
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Bad Request");
+        });
+    });
+    test("400: incorrect data type for the username value", () => {
+      return request(app)
+        .post("/api/reviews/1/comments")
+        .expect(400)
+        .send({ username: 100, body: "This is a test!" })
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Bad Request: Incorrect data type on username");
+        });
+    });
+    test("400: incorrect data type for the body value", () => {
+      return request(app)
+        .post("/api/reviews/1/comments")
+        .expect(400)
+        .send({ username: "mallionaire", body: true })
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Bad Request: Incorrect data type on body");
+        });
+    });
+    test("400: request object does not have a username property", () => {
+      return request(app)
+        .post("/api/reviews/1/comments")
+        .expect(400)
+        .send({ body: "This is a test!" })
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Bad Request: Missing username property");
+        });
+    });
+    test("400: request object does not have a body property", () => {
+      return request(app)
+        .post("/api/reviews/1/comments")
+        .expect(400)
+        .send({ username: "mallionaire" })
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Bad Request: Missing body property");
+        });
+    });
+  });
 });
