@@ -56,3 +56,16 @@ exports.addCommentByReviewId = (id, commentObj) => {
       return postedComment[0];
     });
 };
+
+exports.updateReviewByReviewId = (id, inc_value) => {
+  const queryStr = `
+  UPDATE reviews
+  SET votes = votes + $1
+  WHERE review_id = $2
+  RETURNING *;`;
+  return db
+    .query(queryStr, [inc_value, id])
+    .then(({ rows: updated_review }) => {
+      return updated_review[0];
+    });
+};
