@@ -57,15 +57,21 @@ exports.addCommentByReviewId = (id, commentObj) => {
     });
 };
 
-exports.updateReviewByReviewId = (id, inc_value) => {
+exports.updateReviewByReviewId = (id, inc_votes) => {
   const queryStr = `
   UPDATE reviews
   SET votes = votes + $1
   WHERE review_id = $2
   RETURNING *;`;
   return db
-    .query(queryStr, [inc_value, id])
-    .then(({ rows: updated_review }) => {
+    .query(queryStr, [inc_votes, id])
+    .then(({ rows: updated_review, rowCount }) => {
+      if (rowCount === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: `Review ID: ${id} Not Found`,
+        });
+      }
       return updated_review[0];
     });
 };

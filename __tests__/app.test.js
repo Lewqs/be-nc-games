@@ -231,7 +231,7 @@ describe("App", () => {
     test("200: Responds with an updated review object with the votes incremented correctly", () => {
       return request(app)
         .patch("/api/reviews/1")
-        .send({ inc_value: 1 })
+        .send({ inc_votes: 1 })
         .expect(200)
         .then(({ body, body: { updated_review } }) => {
           expect(body).toHaveProperty("updated_review");
@@ -258,7 +258,7 @@ describe("App", () => {
     test("200: Responds with an updated review object with the votes decremented correctly", () => {
       return request(app)
         .patch("/api/reviews/1")
-        .send({ inc_value: -1 })
+        .send({ inc_votes: -1 })
         .expect(200)
         .then(({ body, body: { updated_review } }) => {
           expect(body).toHaveProperty("updated_review");
@@ -285,7 +285,7 @@ describe("App", () => {
     test("404: correct data type for the review_id param, but review is not found", () => {
       return request(app)
         .patch("/api/reviews/100")
-        .send({ inc_value: 100 })
+        .send({ inc_votes: 100 })
         .expect(404)
         .then(({ body: { message } }) => {
           expect(message).toBe("Review ID: 100 Not Found");
@@ -294,16 +294,16 @@ describe("App", () => {
     test("400: incorrect data type for the review_id param", () => {
       return request(app)
         .patch("/api/reviews/abc")
-        .send({ inc_value: 100 })
+        .send({ inc_votes: 100 })
         .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("Bad Request");
         });
     });
-    test("400: incorrect data type for the inc_value property in the request object", () => {
+    test("400: incorrect data type for the inc_votes property in the request object", () => {
       return request(app)
         .patch("/api/reviews/abc")
-        .send({ inc_value: "abc" })
+        .send({ inc_votes: "abc" })
         .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("Bad Request");
