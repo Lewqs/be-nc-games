@@ -22,8 +22,20 @@ exports.fetchReviews = () => {
 
 exports.fetchReviewById = (id) => {
   const queryStr = `SELECT * FROM reviews WHERE review_id = $1;`;
-  return db.query(queryStr, [id]).then(({ rows: reviews }) => {
-    if (!reviews[0]) return Promise.reject({ status: 404, msg: "Not Found" });
+  return db.query(queryStr, [id]).then(({ rows: reviews, rowCount }) => {
+    if (rowCount === 0)
+      return Promise.reject({ status: 404, msg: `Review ID: ${id} Not Found` });
     return reviews[0];
+  });
+};
+
+exports.fetchCommentsByReviewId = (id) => {
+  const queryStr = `
+    SELECT * FROM comments
+    WHERE review_id = $1
+    ORDER BY created_at DESC
+    `;
+  return db.query(queryStr, [id]).then(({ rows: comments }) => {
+    return comments;
   });
 };
