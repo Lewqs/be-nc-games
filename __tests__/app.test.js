@@ -192,8 +192,8 @@ describe("App", () => {
     test("400: incorrect data type for the review_id param", () => {
       return request(app)
         .post("/api/reviews/abc/comments")
-        .expect(400)
         .send({ username: "mallionaire", body: "This is a test!" })
+        .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("Bad Request");
         });
@@ -201,8 +201,8 @@ describe("App", () => {
     test("400: incorrect data type for the username value", () => {
       return request(app)
         .post("/api/reviews/1/comments")
-        .expect(400)
         .send({ username: 100, body: "This is a test!" })
+        .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("Bad Request");
         });
@@ -210,8 +210,8 @@ describe("App", () => {
     test("400: request object does not have a username property", () => {
       return request(app)
         .post("/api/reviews/1/comments")
-        .expect(400)
         .send({ body: "This is a test!" })
+        .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("Bad Request");
         });
@@ -219,8 +219,92 @@ describe("App", () => {
     test("400: request object does not have a body property", () => {
       return request(app)
         .post("/api/reviews/1/comments")
-        .expect(400)
         .send({ username: "mallionaire" })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Bad Request");
+        });
+    });
+  });
+
+  describe("PATCH /api/reviews/:review_id", () => {
+    test("200: Responds with an updated review object with the votes incremented correctly", () => {
+      return request(app)
+        .patch("/api/reviews/1")
+        .send({ inc_votes: 1 })
+        .expect(200)
+        .then(({ body, body: { updated_review } }) => {
+          expect(body).toHaveProperty("updated_review");
+          expect(updated_review).toHaveProperty("votes", 2);
+          expect(updated_review).toHaveProperty("owner", expect.any(String));
+          expect(updated_review).toHaveProperty("title", expect.any(String));
+          expect(updated_review).toHaveProperty("review_id", 1);
+          expect(updated_review).toHaveProperty("category", expect.any(String));
+          expect(updated_review).toHaveProperty(
+            "review_img_url",
+            expect.any(String)
+          );
+          expect(updated_review).toHaveProperty(
+            "review_body",
+            expect.any(String)
+          );
+          expect(updated_review).toHaveProperty(
+            "created_at",
+            expect.any(String)
+          );
+          expect(updated_review).toHaveProperty("designer", expect.any(String));
+        });
+    });
+    test("200: Responds with an updated review object with the votes decremented correctly", () => {
+      return request(app)
+        .patch("/api/reviews/1")
+        .send({ inc_votes: -1 })
+        .expect(200)
+        .then(({ body, body: { updated_review } }) => {
+          expect(body).toHaveProperty("updated_review");
+          expect(updated_review).toHaveProperty("votes", 0);
+          expect(updated_review).toHaveProperty("owner", expect.any(String));
+          expect(updated_review).toHaveProperty("title", expect.any(String));
+          expect(updated_review).toHaveProperty("review_id", 1);
+          expect(updated_review).toHaveProperty("category", expect.any(String));
+          expect(updated_review).toHaveProperty(
+            "review_img_url",
+            expect.any(String)
+          );
+          expect(updated_review).toHaveProperty(
+            "review_body",
+            expect.any(String)
+          );
+          expect(updated_review).toHaveProperty(
+            "created_at",
+            expect.any(String)
+          );
+          expect(updated_review).toHaveProperty("designer", expect.any(String));
+        });
+    });
+    test("404: correct data type for the review_id param, but review is not found", () => {
+      return request(app)
+        .patch("/api/reviews/100")
+        .send({ inc_votes: 100 })
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Review ID: 100 Not Found");
+        });
+    });
+    test("400: incorrect data type for the review_id param", () => {
+      return request(app)
+        .patch("/api/reviews/abc")
+        .send({ inc_votes: 100 })
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Bad Request");
+        });
+    });
+    test("400: incorrect data type for the inc_votes property in the request object", () => {
+      return request(app)
+        .patch("/api/reviews/abc")
+        .send({ inc_votes: "abc" })
+        .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("Bad Request");
         });
