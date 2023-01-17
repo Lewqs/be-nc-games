@@ -43,30 +43,6 @@ exports.fetchCommentsByReviewId = (id) => {
 
 exports.addCommentByReviewId = (id, commentObj) => {
   const { username, body } = commentObj;
-  if (!username) {
-    return Promise.reject({
-      status: 400,
-      msg: "Bad Request: Missing username property",
-    });
-  }
-  if (!body) {
-    return Promise.reject({
-      status: 400,
-      msg: "Bad Request: Missing body property",
-    });
-  }
-  if (typeof username !== "string") {
-    return Promise.reject({
-      status: 400,
-      msg: "Bad Request: Incorrect data type on username",
-    });
-  }
-  if (typeof body !== "string") {
-    return Promise.reject({
-      status: 400,
-      msg: "Bad Request: Incorrect data type on body",
-    });
-  }
   const queryStr = `
       INSERT INTO comments
         (review_id, author, body)

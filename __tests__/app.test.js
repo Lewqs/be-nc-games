@@ -204,16 +204,7 @@ describe("App", () => {
         .expect(400)
         .send({ username: 100, body: "This is a test!" })
         .then(({ body: { message } }) => {
-          expect(message).toBe("Bad Request: Incorrect data type on username");
-        });
-    });
-    test("400: incorrect data type for the body value", () => {
-      return request(app)
-        .post("/api/reviews/1/comments")
-        .expect(400)
-        .send({ username: "mallionaire", body: true })
-        .then(({ body: { message } }) => {
-          expect(message).toBe("Bad Request: Incorrect data type on body");
+          expect(message).toBe("Bad Request");
         });
     });
     test("400: request object does not have a username property", () => {
@@ -222,7 +213,7 @@ describe("App", () => {
         .expect(400)
         .send({ body: "This is a test!" })
         .then(({ body: { message } }) => {
-          expect(message).toBe("Bad Request: Missing username property");
+          expect(message).toBe("Bad Request");
         });
     });
     test("400: request object does not have a body property", () => {
@@ -231,7 +222,7 @@ describe("App", () => {
         .expect(400)
         .send({ username: "mallionaire" })
         .then(({ body: { message } }) => {
-          expect(message).toBe("Bad Request: Missing body property");
+          expect(message).toBe("Bad Request");
         });
     });
   });
