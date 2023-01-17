@@ -23,8 +23,9 @@ exports.fetchReviews = () => {
 exports.fetchReviewById = (id) => {
   const queryStr = `SELECT * FROM reviews WHERE review_id = $1;`;
   return db.query(queryStr, [id]).then(({ rows: reviews, rowCount }) => {
-    if (rowCount === 0)
+    if (rowCount === 0) {
       return Promise.reject({ status: 404, msg: `Review ID: ${id} Not Found` });
+    }
     return reviews[0];
   });
 };
@@ -38,4 +39,20 @@ exports.fetchCommentsByReviewId = (id) => {
   return db.query(queryStr, [id]).then(({ rows: comments }) => {
     return comments;
   });
+};
+
+exports.addCommentByReviewId = (id, commentObj) => {
+  const { username, body } = commentObj;
+  const queryStr = `
+      INSERT INTO comments
+        (review_id, author, body)
+      VALUES
+        ($1, $2, $3)
+      RETURNING *;
+      `;
+  return db
+    .query(queryStr, [id, username, body])
+    .then(({ rows: postedComment }) => {
+      return postedComment[0];
+    });
 };
