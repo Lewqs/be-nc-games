@@ -9,15 +9,19 @@ const {
 } = require("../models");
 
 exports.getCategories = (req, res, next) => {
-  fetchCategories().then((categories) => {
-    res.status(200).send({ categories });
-  });
+  fetchCategories()
+    .then((categories) => {
+      res.status(200).send({ categories });
+    })
+    .catch(next);
 };
 
 exports.getReviews = (req, res, next) => {
-  fetchReviews().then((reviews) => {
-    res.status(200).send({ reviews });
-  });
+  fetchReviews()
+    .then((reviews) => {
+      res.status(200).send({ reviews });
+    })
+    .catch(next);
 };
 
 exports.getReviewById = (req, res, next) => {
