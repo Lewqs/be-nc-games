@@ -5,18 +5,23 @@ const {
   fetchCommentsByReviewId,
   addCommentByReviewId,
   updateReviewByReviewId,
+  fetchUsers,
 } = require("../models");
 
 exports.getCategories = (req, res, next) => {
-  fetchCategories().then((categories) => {
-    res.status(200).send({ categories });
-  });
+  fetchCategories()
+    .then((categories) => {
+      res.status(200).send({ categories });
+    })
+    .catch(next);
 };
 
 exports.getReviews = (req, res, next) => {
-  fetchReviews().then((reviews) => {
-    res.status(200).send({ reviews });
-  });
+  fetchReviews()
+    .then((reviews) => {
+      res.status(200).send({ reviews });
+    })
+    .catch(next);
 };
 
 exports.getReviewById = (req, res, next) => {
@@ -60,6 +65,14 @@ exports.patchReviewByReviewId = (req, res, next) => {
   updateReviewByReviewId(review_id, inc_votes)
     .then((updated_review) => {
       res.status(200).send({ updated_review });
+    })
+    .catch(next);
+};
+
+exports.getUsers = (req, res, next) => {
+  fetchUsers()
+    .then((users) => {
+      res.status(200).send({ users });
     })
     .catch(next);
 };

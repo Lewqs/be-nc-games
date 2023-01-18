@@ -310,4 +310,21 @@ describe("App", () => {
         });
     });
   });
+
+  describe("GET /api/users", () => {
+    test("200: Responds with an array of user objects, each having username, name and avatar_url properties", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body, body: { users } }) => {
+          expect(body).toHaveProperty("users");
+          expect(users).toHaveLength(4);
+          users.forEach((user) => {
+            expect(user).toHaveProperty("username", expect.any(String));
+            expect(user).toHaveProperty("name", expect.any(String));
+            expect(user).toHaveProperty("avatar_url", expect.any(String));
+          });
+        });
+    });
+  });
 });

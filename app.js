@@ -6,6 +6,7 @@ const {
   getCommentsByReviewId,
   postCommentByReviewId,
   patchReviewByReviewId,
+  getUsers,
 } = require("./controllers");
 const app = express();
 
@@ -17,6 +18,7 @@ app.get("/api/reviews/:review_id", getReviewById);
 app.get("/api/reviews/:review_id/comments", getCommentsByReviewId);
 app.post("/api/reviews/:review_id/comments", postCommentByReviewId);
 app.patch("/api/reviews/:review_id", patchReviewByReviewId);
+app.get("/api/users", getUsers);
 
 // Path Not Found Handler
 app.use((req, res, next) => {

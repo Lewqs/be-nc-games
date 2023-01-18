@@ -75,3 +75,10 @@ exports.updateReviewByReviewId = (id, inc_votes) => {
       return updated_review[0];
     });
 };
+
+exports.fetchUsers = () => {
+  const queryStr = `SELECT * FROM users;`;
+  return db.query(queryStr).then(({ rows: users }) => {
+    return users;
+  });
+};
