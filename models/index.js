@@ -18,6 +18,12 @@ exports.fetchReviews = (category, sort_by = "created_at", order = "desc") => {
     "comment_count",
   ];
   const validOrdersQueries = ["asc", "desc"];
+  const validCategoriesQueries = [
+    "euro game",
+    "social deduction",
+    "dexterity",
+    "children's games",
+  ];
 
   let queryStr = `
       SELECT reviews.review_id, reviews.title, reviews.designer, reviews.owner, reviews.review_img_url, reviews.category, reviews.created_at, 
@@ -47,11 +53,12 @@ exports.fetchReviews = (category, sort_by = "created_at", order = "desc") => {
   return db
     .query(queryStr, category ? [category] : [])
     .then(({ rows: reviews, rowCount }) => {
-      if (rowCount < 1)
+      if (rowCount < 1 && !validCategoriesQueries.includes(category)) {
         return Promise.reject({
           status: 404,
-          msg: category ? `Category '${category}' Not Found` : "Not Found",
+          msg: `Category '${category}' Not Found`,
         });
+      }
       return reviews;
     });
 };

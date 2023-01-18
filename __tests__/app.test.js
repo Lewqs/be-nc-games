@@ -79,6 +79,7 @@ describe("App", () => {
         .get("/api/reviews?category=dexterity")
         .expect(200)
         .then(({ body: { reviews } }) => {
+          expect(reviews.length).toBeGreaterThanOrEqual(1);
           reviews.forEach((review) => {
             expect(review).toHaveProperty("category", "dexterity");
           });
@@ -98,6 +99,15 @@ describe("App", () => {
         .expect(200)
         .then(({ body: { reviews } }) => {
           expect(reviews).toBeSortedBy("created_at", { descending: false });
+        });
+    });
+    test("200: Valid category query, but no reviews found", () => {
+      return request(app)
+        .get("/api/reviews?category=children's games")
+        .expect(200)
+        .then(({ body, body: { reviews } }) => {
+          expect(body).toHaveProperty("reviews");
+          expect(reviews).toHaveLength(0);
         });
     });
     test("404: Category not found", () => {
