@@ -43,7 +43,7 @@ describe("App", () => {
   });
 
   describe("GET /api/reviews", () => {
-    test(`200: Responds with and array of review objects, each of which should have an owner, title, review_id, category, review_img_url, created_at, votes, designer, and comment_count property`, () => {
+    test(`200: Responds with the array of review objects, each of which should have an owner, title, review_id, category, review_img_url, created_at, votes, designer, and comment_count property`, () => {
       return request(app)
         .get("/api/reviews")
         .expect(200)
@@ -63,7 +63,7 @@ describe("App", () => {
           });
         });
     });
-    test("should return the array of review objects sorted by created_at in descending order", () => {
+    test("200: Responds with the array of review objects sorted by created_at in descending order", () => {
       return request(app)
         .get("/api/reviews")
         .expect(200)
@@ -71,6 +71,61 @@ describe("App", () => {
           expect(reviews).toBeSortedBy("created_at", {
             descending: true,
           });
+        });
+    });
+    // Query tests
+    test("200: Responds with the array of review objects, all of which only have the category of 'dexterity'", () => {
+      return request(app)
+        .get("/api/reviews?category=dexterity")
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+          reviews.forEach((review) => {
+            expect(review).toHaveProperty("category", "dexterity");
+          });
+        });
+    });
+    test("200: Responds with the array of review objects sorted by comment_count (using default order)", () => {
+      return request(app)
+        .get("/api/reviews?sort_by=comment_count")
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+          expect(reviews).toBeSortedBy("comment_count", { descending: true });
+        });
+    });
+    test("200: Responds with the array of review objects ordered by ascending (using default sort_by)", () => {
+      return request(app)
+        .get("/api/reviews?order=asc")
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+          expect(reviews).toBeSortedBy("created_at", { descending: false });
+        });
+    });
+    test("404: Category not found", () => {
+      return request(app)
+        .get("/api/reviews?category=test")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Category 'test' Not Found");
+        });
+    });
+    test("400: Invalid sort_by query", () => {
+      return request(app)
+        .get("/api/reviews?sort_by=test")
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe(
+            "Bad Request: Enter a valid sort_by query (See endpoints.md)"
+          );
+        });
+    });
+    test("400: Invalid order query", () => {
+      return request(app)
+        .get("/api/reviews?order=test")
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe(
+            "Bad Request: Enter a valid order query (asc|desc)"
+          );
         });
     });
   });

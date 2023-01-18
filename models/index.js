@@ -7,17 +7,53 @@ exports.fetchCategories = () => {
   });
 };
 
-exports.fetchReviews = () => {
-  const queryStr = `
-  SELECT reviews.review_id, reviews.title, reviews.designer, reviews.owner, reviews.review_img_url, reviews.category,
-  reviews.created_at, reviews.votes, COUNT(comment_id)::int AS comment_count FROM reviews
-  JOIN comments
-  ON reviews.review_id = comments.review_id
-  GROUP BY reviews.review_id
-  ORDER BY created_at desc;`;
-  return db.query(queryStr).then(({ rows: reviews }) => {
-    return reviews;
-  });
+exports.fetchReviews = (category, sort_by = "created_at", order = "desc") => {
+  const validSortByQueries = [
+    "review_id",
+    "title",
+    "owner",
+    "category",
+    "created_at",
+    "votes",
+    "comment_count",
+  ];
+  const validOrdersQueries = ["asc", "desc"];
+
+  let queryStr = `
+      SELECT reviews.review_id, reviews.title, reviews.designer, reviews.owner, reviews.review_img_url, reviews.category, reviews.created_at, 
+        reviews.votes, COUNT(comment_id)::int AS comment_count FROM reviews
+      LEFT JOIN comments
+      ON reviews.review_id = comments.review_id
+  `;
+
+  if (!validSortByQueries.includes(sort_by)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad Request: Enter a valid sort_by query (See endpoints.md)",
+    });
+  }
+  if (!validOrdersQueries.includes(order)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad Request: Enter a valid order query (asc|desc)",
+    });
+  }
+
+  if (category) {
+    queryStr += ` WHERE category = $1`;
+  }
+  queryStr += ` GROUP BY reviews.review_id`;
+  queryStr += ` ORDER BY ${sort_by} ${order.toUpperCase()};`;
+  return db
+    .query(queryStr, category ? [category] : [])
+    .then(({ rows: reviews, rowCount }) => {
+      if (rowCount < 1)
+        return Promise.reject({
+          status: 404,
+          msg: category ? `Category '${category}' Not Found` : "Not Found",
+        });
+      return reviews;
+    });
 };
 
 exports.fetchReviewById = (id) => {
