@@ -43,7 +43,7 @@ describe("App", () => {
   });
 
   describe("GET /api/reviews", () => {
-    test(`200: Responds with and array of review objects, each of which should have an owner, title, review_id, category, review_img_url, created_at, votes, designer, and comment_count property`, () => {
+    test(`200: Responds with the array of review objects, each of which should have an owner, title, review_id, category, review_img_url, created_at, votes, designer, and comment_count property`, () => {
       return request(app)
         .get("/api/reviews")
         .expect(200)
@@ -63,7 +63,7 @@ describe("App", () => {
           });
         });
     });
-    test("should return the array of review objects sorted by created_at in descending order", () => {
+    test("200: Responds with the array of review objects sorted by created_at in descending order", () => {
       return request(app)
         .get("/api/reviews")
         .expect(200)
@@ -71,6 +71,93 @@ describe("App", () => {
           expect(reviews).toBeSortedBy("created_at", {
             descending: true,
           });
+        });
+    });
+    // Query tests
+    test("200: Responds with the array of review objects, all of which should have all the category types", () => {
+      return request(app)
+        .get("/api/reviews")
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+          expect(reviews.length).toBeGreaterThanOrEqual(1);
+          reviews.forEach((review) => {
+            expect(review).toHaveProperty("category", expect.any(String));
+          });
+        });
+    });
+    test("200: Responds with the array of review objects, all of which only have the category of the queried category", () => {
+      return request(app)
+        .get("/api/reviews?category=dexterity")
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+          expect(reviews.length).toBeGreaterThanOrEqual(1);
+          reviews.forEach((review) => {
+            expect(review).toHaveProperty("category", "dexterity");
+          });
+        });
+    });
+    test("200: Responds with each array of review objects sorted by each valid sort_by query (using default order)", () => {
+      const requestFunc = (query) => {
+        return request(app)
+          .get(`/api/reviews?sort_by=${query}`)
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews).toBeSortedBy(query, { descending: true });
+          });
+      };
+      return Promise.all([
+        requestFunc("review_id"),
+        requestFunc("title"),
+        requestFunc("owner"),
+        requestFunc("category"),
+        requestFunc("created_at"),
+        requestFunc("votes"),
+        requestFunc("comment_count"),
+      ]);
+    });
+    test("200: Responds with the array of review objects ordered by the queried order (using default sort_by)", () => {
+      return request(app)
+        .get("/api/reviews?order=asc")
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+          expect(reviews).toBeSortedBy("created_at", { descending: false });
+        });
+    });
+    test("200: Valid category query, but no reviews found", () => {
+      return request(app)
+        .get("/api/reviews?category=children's games")
+        .expect(200)
+        .then(({ body, body: { reviews } }) => {
+          expect(body).toHaveProperty("reviews");
+          expect(reviews).toHaveLength(0);
+        });
+    });
+    test("404: Category not found", () => {
+      return request(app)
+        .get("/api/reviews?category=test")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Category 'test' Not Found");
+        });
+    });
+    test("400: Invalid sort_by query", () => {
+      return request(app)
+        .get("/api/reviews?sort_by=test")
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe(
+            "Bad Request: Enter a valid sort_by query (See endpoints.md)"
+          );
+        });
+    });
+    test("400: Invalid order query", () => {
+      return request(app)
+        .get("/api/reviews?order=test")
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe(
+            "Bad Request: Enter a valid order query (asc|desc)"
+          );
         });
     });
   });

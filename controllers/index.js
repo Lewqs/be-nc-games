@@ -17,7 +17,14 @@ exports.getCategories = (req, res, next) => {
 };
 
 exports.getReviews = (req, res, next) => {
-  fetchReviews()
+  const {
+    query: { category, sort_by, order },
+  } = req;
+  fetchCategories()
+    .then((categories) => {
+      const categoryNamesArr = categories.map((category) => category.slug);
+      return fetchReviews(category, sort_by, order, categoryNamesArr);
+    })
     .then((reviews) => {
       res.status(200).send({ reviews });
     })
