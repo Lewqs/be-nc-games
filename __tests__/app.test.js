@@ -76,7 +76,7 @@ describe("App", () => {
     // Query tests
     test("200: Responds with the array of review objects, all of which should have all the category types", () => {
       return request(app)
-        .get("/api/reviews?category=dexterity")
+        .get("/api/reviews")
         .expect(200)
         .then(({ body: { reviews } }) => {
           expect(reviews.length).toBeGreaterThanOrEqual(1);
