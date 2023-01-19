@@ -74,7 +74,7 @@ describe("App", () => {
         });
     });
     // Query tests
-    test("200: Responds with the array of review objects, all of which only have the category of 'dexterity'", () => {
+    test("200: Responds with the array of review objects, all of which only have the category of the queried category", () => {
       return request(app)
         .get("/api/reviews?category=dexterity")
         .expect(200)
@@ -104,7 +104,7 @@ describe("App", () => {
         requestFunc("comment_count"),
       ]);
     });
-    test("200: Responds with the array of review objects ordered by ascending (using default sort_by)", () => {
+    test("200: Responds with the array of review objects ordered by the queried order (using default sort_by)", () => {
       return request(app)
         .get("/api/reviews?order=asc")
         .expect(200)
