@@ -63,7 +63,12 @@ exports.fetchReviews = (
 };
 
 exports.fetchReviewById = (id) => {
-  const queryStr = `SELECT * FROM reviews WHERE review_id = $1;`;
+  const queryStr = `SELECT reviews.*, COUNT(comment_id)::int AS comment_count FROM reviews
+  LEFT JOIN comments
+  ON reviews.review_id = comments.review_id
+  WHERE reviews.review_id = $1
+  GROUP BY reviews.review_id;
+  `;
   return db.query(queryStr, [id]).then(({ rows: reviews, rowCount }) => {
     if (rowCount === 0) {
       return Promise.reject({ status: 404, msg: `Review ID: ${id} Not Found` });

@@ -180,6 +180,14 @@ describe("App", () => {
           expect(review).toHaveProperty("designer", expect.any(String));
         });
     });
+    test("200: Responds with a review object, which should have the property: comment_count", () => {
+      return request(app)
+        .get("/api/reviews/1")
+        .expect(200)
+        .then(({ body: { review } }) => {
+          expect(review).toHaveProperty("comment_count", expect.any(Number));
+        });
+    });
     test("404: correct data type, but review is not found in the data", () => {
       return request(app)
         .get("/api/reviews/100")
