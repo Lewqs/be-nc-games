@@ -422,4 +422,31 @@ describe("App", () => {
         });
     });
   });
+
+  describe("DELETE /api/comments/:comment_id", () => {
+    test("204: successfully deletes and responds with 'No Content'", () => {
+      return request(app)
+        .delete("/api/comments/1")
+        .expect(204)
+        .then(({ body }) => {
+          expect(body).toEqual({});
+        });
+    });
+    test("404: correct data type for the comment_id param, but comment is not found", () => {
+      return request(app)
+        .delete("/api/comments/100")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Comment ID: 100 Not Found");
+        });
+    });
+    test("400: incorrect data type for the comment_id param", () => {
+      return request(app)
+        .delete("/api/comments/abc")
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Bad Request");
+        });
+    });
+  });
 });
