@@ -85,13 +85,24 @@ describe("App", () => {
           });
         });
     });
-    test("200: Responds with the array of review objects sorted by comment_count (using default order)", () => {
-      return request(app)
-        .get("/api/reviews?sort_by=comment_count")
-        .expect(200)
-        .then(({ body: { reviews } }) => {
-          expect(reviews).toBeSortedBy("comment_count", { descending: true });
-        });
+    test("200: Responds with each array of review objects sorted by each valid sort_by query (using default order)", () => {
+      const requestFunc = (query) => {
+        return request(app)
+          .get(`/api/reviews?sort_by=${query}`)
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews).toBeSortedBy(query, { descending: true });
+          });
+      };
+      return Promise.all([
+        requestFunc("review_id"),
+        requestFunc("title"),
+        requestFunc("owner"),
+        requestFunc("category"),
+        requestFunc("created_at"),
+        requestFunc("votes"),
+        requestFunc("comment_count"),
+      ]);
     });
     test("200: Responds with the array of review objects ordered by ascending (using default sort_by)", () => {
       return request(app)

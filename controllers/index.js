@@ -20,11 +20,14 @@ exports.getReviews = (req, res, next) => {
   const {
     query: { category, sort_by, order },
   } = req;
-  fetchReviews(category, sort_by, order)
-    .then((reviews) => {
-      res.status(200).send({ reviews });
-    })
-    .catch(next);
+  fetchCategories().then((categories) => {
+    const categoryNamesArr = categories.map((category) => category.slug);
+    fetchReviews(category, sort_by, order, categoryNamesArr)
+      .then((reviews) => {
+        res.status(200).send({ reviews });
+      })
+      .catch(next);
+  });
 };
 
 exports.getReviewById = (req, res, next) => {

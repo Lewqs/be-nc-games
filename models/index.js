@@ -7,7 +7,12 @@ exports.fetchCategories = () => {
   });
 };
 
-exports.fetchReviews = (category, sort_by = "created_at", order = "desc") => {
+exports.fetchReviews = (
+  category,
+  sort_by = "created_at",
+  order = "desc",
+  validCategoriesQueries
+) => {
   const validSortByQueries = [
     "review_id",
     "title",
@@ -18,19 +23,6 @@ exports.fetchReviews = (category, sort_by = "created_at", order = "desc") => {
     "comment_count",
   ];
   const validOrdersQueries = ["asc", "desc"];
-  const validCategoriesQueries = [
-    "euro game",
-    "social deduction",
-    "dexterity",
-    "children's games",
-  ];
-
-  let queryStr = `
-      SELECT reviews.review_id, reviews.title, reviews.designer, reviews.owner, reviews.review_img_url, reviews.category, reviews.created_at, 
-        reviews.votes, COUNT(comment_id)::int AS comment_count FROM reviews
-      LEFT JOIN comments
-      ON reviews.review_id = comments.review_id
-  `;
 
   if (!validSortByQueries.includes(sort_by)) {
     return Promise.reject({
@@ -44,6 +36,13 @@ exports.fetchReviews = (category, sort_by = "created_at", order = "desc") => {
       msg: "Bad Request: Enter a valid order query (asc|desc)",
     });
   }
+
+  let queryStr = `
+      SELECT reviews.review_id, reviews.title, reviews.designer, reviews.owner, reviews.review_img_url, reviews.category, reviews.created_at, 
+        reviews.votes, COUNT(comment_id)::int AS comment_count FROM reviews
+      LEFT JOIN comments
+      ON reviews.review_id = comments.review_id
+  `;
 
   if (category) {
     queryStr += ` WHERE category = $1`;
