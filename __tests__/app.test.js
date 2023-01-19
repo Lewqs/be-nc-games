@@ -163,7 +163,7 @@ describe("App", () => {
   });
 
   describe("GET /api/reviews/:review_id", () => {
-    test("200: Responds with a review object, which should have the properties: review_id, title, review_body, designer, review_img_url, votes, category, owner and created_at", () => {
+    test("200: Responds with a review object, which should have the properties: review_id, title, review_body, designer, review_img_url, votes, category, owner, created_at and comment_count", () => {
       return request(app)
         .get("/api/reviews/1")
         .expect(200)
@@ -178,6 +178,7 @@ describe("App", () => {
           expect(review).toHaveProperty("created_at", expect.any(String));
           expect(review).toHaveProperty("votes", expect.any(Number));
           expect(review).toHaveProperty("designer", expect.any(String));
+          expect(review).toHaveProperty("comment_count", expect.any(Number));
         });
     });
     test("404: correct data type, but review is not found in the data", () => {
