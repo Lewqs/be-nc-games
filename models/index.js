@@ -67,7 +67,7 @@ exports.fetchReviewById = (id) => {
   LEFT JOIN comments
   ON reviews.review_id = comments.review_id
   WHERE reviews.review_id = $1
-  GROUP BY reviews.review_id, comments.comment_id;
+  GROUP BY reviews.review_id;
   `;
   return db.query(queryStr, [id]).then(({ rows: reviews, rowCount }) => {
     if (rowCount === 0) {
