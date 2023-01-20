@@ -451,52 +451,26 @@ describe("App", () => {
   });
 
   describe("GET /api", () => {
-    test("200: Responds with endpoints object ", () => {
+    test("200: Responds with endpoints object", () => {
       return request(app)
         .get("/api")
         .expect(200)
         .then(({ body, body: { endpoints } }) => {
           expect(body).toHaveProperty("endpoints");
           expect(Object.keys(endpoints).length).toBeGreaterThanOrEqual(1);
-          for (let endpoint in endpoints) {
-            const endP = endpoints[endpoint];
-            expect(typeof endP.description).toBe("string");
-            if (endP.queries?.length > 1) {
-              endP.queries.forEach((queries) => {
-                for (let query in queries) {
-                  expect(queries[query]).toHaveProperty(
-                    "validQueries",
-                    expect.any(Array)
-                  );
-                  expect(queries[query]).toHaveProperty(
-                    "default",
-                    expect.any(String)
-                  );
-                }
-              });
-            }
-            if (endP.requestBody && Object.keys(endP.requestBody).length > 1) {
-              for (let key in endP.requestBody) {
-                if (endP.requestBody[key]?.requirement) {
-                  expect(endP.requestBody[key]).toHaveProperty(
-                    "requirement",
-                    expect.any(String)
-                  );
-                }
-                expect(endP.requestBody[key]).toHaveProperty(
-                  "dataType",
-                  expect.any(String)
-                );
-                expect(endP.requestBody[key]).toHaveProperty(
-                  "required",
-                  expect.any(Boolean)
-                );
-              }
-            }
-            if (endP.exampleResponse) {
-              expect(typeof endP.exampleResponse).toBe("object");
-            }
-          }
+          expect(endpoints).toHaveProperty("GET /api");
+          expect(endpoints).toHaveProperty("GET /api/users");
+          expect(endpoints).toHaveProperty("GET /api/categories");
+          expect(endpoints).toHaveProperty("GET /api/reviews");
+          expect(endpoints).toHaveProperty("GET /api/reviews/:review_id");
+          expect(endpoints).toHaveProperty(
+            "GET /api/reviews/:review_id/comments"
+          );
+          expect(endpoints).toHaveProperty(
+            "POST /api/reviews/:review_id/comments"
+          );
+          expect(endpoints).toHaveProperty("PATCH /api/reviews/:review_id");
+          expect(endpoints).toHaveProperty("DELETE /api/comments/:comment_id");
         });
     });
   });
