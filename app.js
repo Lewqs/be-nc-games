@@ -8,6 +8,7 @@ const {
   patchReviewByReviewId,
   getUsers,
   deleteCommentByCommentId,
+  getAPI,
 } = require("./controllers");
 const app = express();
 
@@ -21,6 +22,7 @@ app.post("/api/reviews/:review_id/comments", postCommentByReviewId);
 app.patch("/api/reviews/:review_id", patchReviewByReviewId);
 app.get("/api/users", getUsers);
 app.delete("/api/comments/:comment_id", deleteCommentByCommentId);
+app.get("/api", getAPI);
 
 // Path Not Found Handler
 app.use((req, res, next) => {

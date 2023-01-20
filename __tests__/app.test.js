@@ -449,4 +449,66 @@ describe("App", () => {
         });
     });
   });
+
+  describe("GET /api", () => {
+    test("200: Responds with endpoints object ", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then(({ body, body: { endpoints } }) => {
+          expect(body).toHaveProperty("endpoints");
+          expect(Object.keys(endpoints).length).toBeGreaterThanOrEqual(1);
+          for (let endpoint in endpoints) {
+            const endP = endpoints[endpoint];
+            expect(typeof endP.description).toBe("string");
+            if (endP.queries?.length > 1) {
+              endP.queries.forEach((queries) => {
+                for (let query in queries) {
+                  expect(queries[query]).toHaveProperty(
+                    "validQueries",
+                    expect.any(Array)
+                  );
+                  expect(queries[query]).toHaveProperty(
+                    "default",
+                    expect.any(String)
+                  );
+                }
+              });
+            }
+            if (endP.requestBody?.length > 1) {
+              endP.requestBody.forEach(({ username, body, inc_value }) => {
+                if (username) {
+                  expect(username).toHaveProperty(
+                    "dataType",
+                    expect.any(Array)
+                  );
+                  expect(username).toHaveProperty(
+                    "required",
+                    expect.any(Boolean)
+                  );
+                }
+                if (body) {
+                  expect(body).toHaveProperty("dataType", expect.any(Array));
+                  expect(body).toHaveProperty("required", expect.any(Boolean));
+                }
+                if (inc_value) {
+                  expect(inc_value).toHaveProperty(
+                    "dataType",
+                    expect.any(Array)
+                  );
+                  expect(inc_value).toHaveProperty(
+                    "required",
+                    expect.any(Boolean)
+                  );
+                }
+              });
+              expect(typeof endP.requestBody).toBe("object");
+            }
+            if (endP.exampleResponse) {
+              expect(typeof endP.exampleResponse).toBe("object");
+            }
+          }
+        });
+    });
+  });
 });
