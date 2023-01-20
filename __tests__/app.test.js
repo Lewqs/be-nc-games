@@ -489,6 +489,10 @@ describe("App", () => {
                 }
                 if (body) {
                   expect(body).toHaveProperty("dataType", expect.any(Array));
+                  expect(body).toHaveProperty(
+                    "requirement",
+                    expect.any(String)
+                  );
                   expect(body).toHaveProperty("required", expect.any(Boolean));
                 }
                 if (inc_value) {
