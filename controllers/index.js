@@ -8,6 +8,7 @@ const {
   fetchUsers,
   removeCommentByCommentId,
 } = require("../models");
+const endpoints = require("../endpoints.json");
 
 exports.getCategories = (req, res, next) => {
   fetchCategories()
@@ -94,4 +95,8 @@ exports.deleteCommentByCommentId = (req, res, next) => {
       res.sendStatus(204);
     })
     .catch(next);
+};
+
+exports.getAPI = (req, res, next) => {
+  res.status(200).send({ endpoints });
 };
