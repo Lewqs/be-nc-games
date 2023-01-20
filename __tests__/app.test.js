@@ -475,38 +475,23 @@ describe("App", () => {
                 }
               });
             }
-            if (endP.requestBody?.length > 1) {
-              endP.requestBody.forEach(({ username, body, inc_value }) => {
-                if (username) {
-                  expect(username).toHaveProperty(
-                    "dataType",
-                    expect.any(Array)
-                  );
-                  expect(username).toHaveProperty(
-                    "required",
-                    expect.any(Boolean)
-                  );
-                }
-                if (body) {
-                  expect(body).toHaveProperty("dataType", expect.any(Array));
-                  expect(body).toHaveProperty(
+            if (endP.requestBody && Object.keys(endP.requestBody).length > 1) {
+              for (let key in endP.requestBody) {
+                if (endP.requestBody[key]?.requirement) {
+                  expect(endP.requestBody[key]).toHaveProperty(
                     "requirement",
                     expect.any(String)
                   );
-                  expect(body).toHaveProperty("required", expect.any(Boolean));
                 }
-                if (inc_value) {
-                  expect(inc_value).toHaveProperty(
-                    "dataType",
-                    expect.any(Array)
-                  );
-                  expect(inc_value).toHaveProperty(
-                    "required",
-                    expect.any(Boolean)
-                  );
-                }
-              });
-              expect(typeof endP.requestBody).toBe("object");
+                expect(endP.requestBody[key]).toHaveProperty(
+                  "dataType",
+                  expect.any(String)
+                );
+                expect(endP.requestBody[key]).toHaveProperty(
+                  "required",
+                  expect.any(Boolean)
+                );
+              }
             }
             if (endP.exampleResponse) {
               expect(typeof endP.exampleResponse).toBe("object");
