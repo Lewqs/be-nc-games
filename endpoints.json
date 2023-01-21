@@ -160,5 +160,16 @@
     "description": "Deletes a comment by comment_id",
     "queries": [],
     "exampleResponse": {}
+  },
+  "GET /api/users/:username": {
+    "description": "serves an object of the user by the username param",
+    "queries": [],
+    "exampleResponse": {
+      "user": {
+        "username": "mallionaire",
+        "name": "haz",
+        "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+      }
+    }
   }
 }
