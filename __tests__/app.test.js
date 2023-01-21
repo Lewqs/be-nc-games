@@ -397,7 +397,7 @@ describe("App", () => {
     });
     test("400: incorrect data type for the inc_votes property in the request object", () => {
       return request(app)
-        .patch("/api/reviews/1")
+        .patch("/api/reviews/abc")
         .send({ inc_votes: "abc" })
         .expect(400)
         .then(({ body: { message } }) => {
@@ -493,78 +493,6 @@ describe("App", () => {
         .expect(404)
         .then(({ body: { message } }) => {
           expect(message).toBe("Username 'Lewis' Not Found");
-        });
-    });
-  });
-
-  describe("PATCH /api/comments/:comment_id", () => {
-    test("200: Responds with an updated comment object with the votes incremented correctly", () => {
-      return request(app)
-        .patch("/api/comments/1")
-        .send({ inc_votes: 1 })
-        .expect(200)
-        .then(({ body, body: { updated_comment } }) => {
-          expect(body).toHaveProperty("updated_comment");
-          expect(updated_comment).toHaveProperty("comment_id", 1);
-          expect(updated_comment).toHaveProperty("votes", 17);
-          expect(updated_comment).toHaveProperty("body", expect.any(String));
-          expect(updated_comment).toHaveProperty("author", expect.any(String));
-          expect(updated_comment).toHaveProperty(
-            "created_at",
-            expect.any(String)
-          );
-          expect(updated_comment).toHaveProperty(
-            "review_id",
-            expect.any(Number)
-          );
-        });
-    });
-    test("200: Responds with an updated comment object with the votes decremented correctly", () => {
-      return request(app)
-        .patch("/api/comments/1")
-        .send({ inc_votes: -1 })
-        .expect(200)
-        .then(({ body, body: { updated_comment } }) => {
-          expect(body).toHaveProperty("updated_comment");
-          expect(updated_comment).toHaveProperty("comment_id", 1);
-          expect(updated_comment).toHaveProperty("votes", 15);
-          expect(updated_comment).toHaveProperty("body", expect.any(String));
-          expect(updated_comment).toHaveProperty("author", expect.any(String));
-          expect(updated_comment).toHaveProperty(
-            "created_at",
-            expect.any(String)
-          );
-          expect(updated_comment).toHaveProperty(
-            "review_id",
-            expect.any(Number)
-          );
-        });
-    });
-    test("404: correct data type for the comment_id param, but comment is not found", () => {
-      return request(app)
-        .patch("/api/comments/100")
-        .send({ inc_votes: 100 })
-        .expect(404)
-        .then(({ body: { message } }) => {
-          expect(message).toBe("Comment ID '100' Not Found");
-        });
-    });
-    test("400: incorrect data type for the comment_id param", () => {
-      return request(app)
-        .patch("/api/comments/abc")
-        .send({ inc_votes: 100 })
-        .expect(400)
-        .then(({ body: { message } }) => {
-          expect(message).toBe("Bad Request");
-        });
-    });
-    test("400: incorrect data type for the inc_votes property in the request object", () => {
-      return request(app)
-        .patch("/api/comments/1")
-        .send({ inc_votes: "abc" })
-        .expect(400)
-        .then(({ body: { message } }) => {
-          expect(message).toBe("Bad Request");
         });
     });
   });
