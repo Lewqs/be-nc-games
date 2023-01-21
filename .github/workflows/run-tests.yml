@@ -1,6 +1,5 @@
-name: Running Tests
-on:
-  - pull_request
+name: Run Tests
+on: pull_request
 jobs:
   unit-tests:
     name: Unit Tests
