@@ -1,22 +1,13 @@
 const {
-  fetchCategories,
-  fetchReviews,
-  fetchReviewById,
-  fetchCommentsByReviewId,
-  addCommentByReviewId,
-  updateReviewByReviewId,
-  fetchUsers,
-  removeCommentByCommentId,
-} = require("../models");
-const endpoints = require("../endpoints.json");
-
-exports.getCategories = (req, res, next) => {
-  fetchCategories()
-    .then((categories) => {
-      res.status(200).send({ categories });
-    })
-    .catch(next);
-};
+  categoriesModels: { fetchCategories },
+  reviewsModels: {
+    fetchReviewById,
+    fetchReviews,
+    fetchCommentsByReviewId,
+    updateReviewByReviewId,
+    addCommentByReviewId,
+  },
+} = require("../models/index.models");
 
 exports.getReviews = (req, res, next) => {
   const {
@@ -51,6 +42,18 @@ exports.getCommentsByReviewId = (req, res, next) => {
     .catch(next);
 };
 
+exports.patchReviewByReviewId = (req, res, next) => {
+  const {
+    params: { review_id },
+    body: { inc_votes },
+  } = req;
+  updateReviewByReviewId(review_id, inc_votes)
+    .then((updated_review) => {
+      res.status(200).send({ updated_review });
+    })
+    .catch(next);
+};
+
 exports.postCommentByReviewId = (req, res, next) => {
   const {
     params: { review_id },
@@ -64,39 +67,4 @@ exports.postCommentByReviewId = (req, res, next) => {
       res.status(201).send({ comment });
     })
     .catch(next);
-};
-
-exports.patchReviewByReviewId = (req, res, next) => {
-  const {
-    params: { review_id },
-    body: { inc_votes },
-  } = req;
-  updateReviewByReviewId(review_id, inc_votes)
-    .then((updated_review) => {
-      res.status(200).send({ updated_review });
-    })
-    .catch(next);
-};
-
-exports.getUsers = (req, res, next) => {
-  fetchUsers()
-    .then((users) => {
-      res.status(200).send({ users });
-    })
-    .catch(next);
-};
-
-exports.deleteCommentByCommentId = (req, res, next) => {
-  const {
-    params: { comment_id },
-  } = req;
-  removeCommentByCommentId(comment_id)
-    .then(() => {
-      res.sendStatus(204);
-    })
-    .catch(next);
-};
-
-exports.getAPI = (req, res, next) => {
-  res.status(200).send({ endpoints });
 };
