@@ -474,4 +474,26 @@ describe("App", () => {
         });
     });
   });
+
+  describe("GET /api/users/:username", () => {
+    test("200: Responds with a user object, which should have the following properties: username, avatar_url and name", () => {
+      return request(app)
+        .get("/api/users/mallionaire")
+        .expect(200)
+        .then(({ body, body: { user } }) => {
+          expect(body).toHaveProperty("user");
+          expect(user).toHaveProperty("username", expect.any(String));
+          expect(user).toHaveProperty("avatar_url", expect.any(String));
+          expect(user).toHaveProperty("name", expect.any(String));
+        });
+    });
+    test("404: user not found", () => {
+      return request(app)
+        .get("/api/users/Lewis")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Username 'Lewis' Not Found");
+        });
+    });
+  });
 });

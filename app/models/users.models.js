@@ -6,3 +6,19 @@ exports.fetchUsers = () => {
     return users;
   });
 };
+
+exports.fetchUserByUsername = (username) => {
+  const queryStr = `
+  SELECT * FROM users
+  WHERE username = $1
+  `;
+
+  return db.query(queryStr, [username]).then(({ rows: user, rowCount }) => {
+    if (rowCount < 1) {
+      return Promise.reject({
+        status: 404,
+        msg: `Username '${username}' Not Found`,
+      });
+    } else return user[0];
+  });
+};
