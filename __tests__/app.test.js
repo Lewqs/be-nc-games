@@ -97,22 +97,49 @@ describe("App", () => {
         });
     });
     test("200: Responds with each array of review objects sorted by each valid sort_by query (using default order)", () => {
-      const requestFunc = (query) => {
-        return request(app)
-          .get(`/api/reviews?sort_by=${query}`)
+      return Promise.all([
+        request(app)
+          .get(`/api/reviews?sort_by=review_id`)
           .expect(200)
           .then(({ body: { reviews } }) => {
-            expect(reviews).toBeSortedBy(query, { descending: true });
-          });
-      };
-      return Promise.all([
-        requestFunc("review_id"),
-        requestFunc("title"),
-        requestFunc("owner"),
-        requestFunc("category"),
-        requestFunc("created_at"),
-        requestFunc("votes"),
-        requestFunc("comment_count"),
+            expect(reviews).toBeSortedBy("review_id", { descending: true });
+          }),
+        request(app)
+          .get(`/api/reviews?sort_by=title`)
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews).toBeSortedBy("title", { descending: true });
+          }),
+        request(app)
+          .get(`/api/reviews?sort_by=owner`)
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews).toBeSortedBy("owner", { descending: true });
+          }),
+        request(app)
+          .get(`/api/reviews?sort_by=category`)
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews).toBeSortedBy("category", { descending: true });
+          }),
+        request(app)
+          .get(`/api/reviews?sort_by=created_at`)
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews).toBeSortedBy("created_at", { descending: true });
+          }),
+        request(app)
+          .get(`/api/reviews?sort_by=votes`)
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews).toBeSortedBy("votes", { descending: true });
+          }),
+        request(app)
+          .get(`/api/reviews?sort_by=comment_count`)
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews).toBeSortedBy("comment_count", { descending: true });
+          }),
       ]);
     });
     test("200: Responds with the array of review objects ordered by the queried order (using default sort_by)", () => {
