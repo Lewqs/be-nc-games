@@ -108,7 +108,10 @@ describe("App", () => {
           .get(`/api/reviews?sort_by=title`)
           .expect(200)
           .then(({ body: { reviews } }) => {
-            expect(reviews).toBeSortedBy("title", { descending: true });
+            expect(reviews).toBeSortedBy("title", {
+              descending: true,
+              coerce: true,
+            });
           }),
         request(app)
           .get(`/api/reviews?sort_by=owner`)
