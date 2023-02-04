@@ -43,8 +43,4 @@ jobs:
         run: npm ci
 
       - name: Run Integration Tests
-        env:
-          PGDATABASE: test
-          PGUSER: test
-          PGPASSWORD: test
-        run: npm test -- app
+        run: PGDATABASE=test PGUSER=test PGPASSWORD=test npm test -- app
