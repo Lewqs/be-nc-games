@@ -115,3 +115,40 @@ exports.updateReviewByReviewId = (id, inc_votes) => {
       return updated_review[0];
     });
 };
+
+exports.addReview = (commentObj) => {
+  const { title, designer, owner, review_img_url, review_body, category } =
+    commentObj;
+  const queryStr = `
+  INSERT INTO reviews 
+  (title, designer, owner, review_img_url, review_body, category)
+  VALUES($1,$2,$3,$4,$5,$6)
+  RETURNING *
+      `;
+
+  const emptyFields = [
+    title,
+    designer,
+    owner,
+    review_img_url,
+    review_body,
+    category,
+  ].some((val) => val === "" || val === undefined);
+
+  if (emptyFields) {
+    return Promise.reject({ status: 400, msg: "Bad Request" });
+  }
+
+  return db
+    .query(queryStr, [
+      title,
+      designer,
+      owner,
+      review_img_url,
+      review_body,
+      category,
+    ])
+    .then(({ rows }) => {
+      return { ...rows[0], comment_count: 0 };
+    });
+};

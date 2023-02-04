@@ -293,13 +293,13 @@ describe("App", () => {
           expect(message).toBe("Bad Request");
         });
     });
-    test("400: incorrect data type for the username value", () => {
+    test("404: if username is not in db", () => {
       return request(app)
         .post("/api/reviews/1/comments")
         .send({ username: 100, body: "This is a test!" })
-        .expect(400)
+        .expect(404)
         .then(({ body: { message } }) => {
-          expect(message).toBe("Bad Request");
+          expect(message).toBe("Not Found");
         });
     });
     test("400: request object does not have a username property", () => {
@@ -565,6 +565,91 @@ describe("App", () => {
         .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("Bad Request");
+        });
+    });
+  });
+
+  describe("POST /api/reviews", () => {
+    test("201: Returns the new review object", () => {
+      return request(app)
+        .post("/api/reviews")
+        .send({
+          title: "Agricola",
+          designer: "Uwe Rosenberg",
+          owner: "mallionaire",
+          review_img_url:
+            "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700",
+          review_body: "Farmyard fun!",
+          category: "euro game",
+        })
+        .expect(201)
+        .then(({ body: { review } }) => {
+          expect(review).toMatchObject({
+            title: expect.any(String),
+            designer: expect.any(String),
+            owner: expect.any(String),
+            review_img_url: expect.any(String),
+            review_body: expect.any(String),
+            category: expect.any(String),
+            review_id: expect.any(Number),
+            votes: 0,
+            created_at: expect.any(String),
+            comment_count: 0,
+          });
+        });
+    });
+    test("400: A required field is empty", () => {
+      const badTestReview = {
+        title: "",
+        designer: "Uwe Rosenberg",
+        owner: "mallionaire",
+        review_img_url:
+          "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700",
+        review_body: "Farmyard fun!",
+        category: "euro game",
+      };
+      return request(app)
+        .post("/api/reviews")
+        .send(badTestReview)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Bad Request");
+        });
+    });
+    test("400: A required is not included in request body", () => {
+      const badTestReview = {
+        // Missing "title"
+        designer: "Uwe Rosenberg",
+        owner: "mallionaire",
+        review_img_url:
+          "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700",
+        review_body: "Farmyard fun!",
+        category: "euro game",
+      };
+      return request(app)
+        .post("/api/reviews")
+        .send(badTestReview)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Bad Request");
+        });
+    });
+    test("404: Owner is not in db", () => {
+      const badTestReview = {
+        title: "Agricola",
+        designer: "Uwe Rosenberg",
+        owner: "ThisOwnerIsNotInTheDB",
+        review_img_url:
+          "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700",
+        review_body: "Farmyard fun!",
+        category: "euro game",
+      };
+      return request(app)
+        .post("/api/reviews")
+        .send(badTestReview)
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("Not Found");
         });
     });
   });
