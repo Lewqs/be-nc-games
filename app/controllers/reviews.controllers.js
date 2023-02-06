@@ -12,15 +12,15 @@ const {
 
 exports.getReviews = (req, res, next) => {
   const {
-    query: { category, sort_by, order },
+    query: { category, sort_by, order, limit, p },
   } = req;
   fetchCategories()
     .then((categories) => {
       const categoryNamesArr = categories.map((category) => category.slug);
-      return fetchReviews(category, sort_by, order, categoryNamesArr);
+      return fetchReviews(category, sort_by, order, categoryNamesArr, limit, p);
     })
     .then((reviews) => {
-      res.status(200).send({ reviews });
+      res.status(200).send({ total_count: reviews.length, reviews });
     })
     .catch(next);
 };

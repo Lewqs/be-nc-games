@@ -15,16 +15,18 @@
     }
   },
   "GET /api/reviews": {
-    "description": "serves an array of all reviews/reviews with the queried category",
+    "description": "serves an array of all reviews",
     "queries": [
       {
         "category": {
+          "description": "serves an array of all reviews with the queried category",
           "validQueries": [],
           "default": "ALL"
         }
       },
       {
         "sort_by": {
+          "description": "specifies the field to sort the reviews by",
           "validQueries": [
             "review_id",
             "title",
@@ -39,15 +41,31 @@
       },
       {
         "order": {
+          "description": "sets the sort order of the reviews",
           "validQueries": [
             "asc",
             "desc"
           ],
           "default": "desc"
         }
+      },
+      {
+        "limit": {
+          "description": "limits the number of reviews returned",
+          "validQueries": [],
+          "default": 10
+        }
+      },
+      {
+        "p": {
+          "description": "specifies the page number of the reviews to return",
+          "validQueries": [],
+          "default": 1
+        }
       }
     ],
     "exampleResponse": {
+      "total_count": 1,
       "reviews": [
         {
           "title": "One Night Ultimate Werewolf",
@@ -189,6 +207,38 @@
         "author": "'bainesface",
         "votes": 17,
         "created_at": "2017-11-22T12:43:33.389Z"
+      }
+    }
+  },
+  "POST /api/reviews": {
+    "description": "Creates a new review",
+    "queries": [],
+    "requestBody": {
+      "title": {
+        "dataType": "String",
+        "required": true
+      },
+      "designer": {
+        "dataType": "String",
+        "required": true
+      },
+      "owner": {
+        "dataType": "String",
+        "requirement": "Owner needs to reference users table",
+        "required": true
+      },
+      "review_image_url": {
+        "dataType": "String",
+        "required": false
+      },
+      "review_body": {
+        "dataType": "String",
+        "required": true
+      },
+      "category": {
+        "dataType": "String",
+        "requirement": "Category needs to reference categories table",
+        "required": true
       }
     }
   }
