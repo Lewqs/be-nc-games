@@ -4,7 +4,9 @@ exports.fetchReviews = (
   category,
   sort_by = "created_at",
   order = "desc",
-  validCategoriesQueries
+  validCategoriesQueries,
+  limit = 10,
+  p
 ) => {
   const validSortByQueries = [
     "review_id",
@@ -40,15 +42,33 @@ exports.fetchReviews = (
   if (category) {
     queryStr += ` WHERE category = $1`;
   }
+
   queryStr += ` GROUP BY reviews.review_id`;
-  queryStr += ` ORDER BY ${sort_by} ${order.toUpperCase()};`;
+  queryStr += ` ORDER BY ${sort_by} ${order.toUpperCase()}`;
+  queryStr += ` LIMIT ${limit}`;
+
+  if (p) {
+    queryStr += ` OFFSET ${(p - 1) * limit};`;
+  }
+
   return db
     .query(queryStr, category ? [category] : [])
     .then(({ rows: reviews, rowCount }) => {
-      if (rowCount < 1 && !validCategoriesQueries.includes(category)) {
+      if (
+        rowCount < 1 &&
+        category !== undefined &&
+        !validCategoriesQueries.includes(category)
+      ) {
         return Promise.reject({
           status: 404,
           msg: `Category '${category}' Not Found`,
+        });
+      }
+
+      if (rowCount < 1 && p) {
+        return Promise.reject({
+          status: 404,
+          msg: `Page Not Found`,
         });
       }
       return reviews;
@@ -92,7 +112,13 @@ exports.addCommentByReviewId = (id, commentObj) => {
       `;
   return db
     .query(queryStr, [id, username, body])
-    .then(({ rows: postedComment }) => {
+    .then(({ rows: postedComment, rowCount }) => {
+      if (rowCount === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: `Review ID: ${id} Not Found`,
+        });
+      }
       return postedComment[0];
     });
 };
